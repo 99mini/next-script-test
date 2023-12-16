@@ -21,40 +21,21 @@ jobs:
         id: get-version
         run: echo "version=$(echo '${{ github.event.head_commit.message }}' | grep -o 'v[0-9.]\+$')" >> $GITHUB_OUTPUT
         shell: bash
-  create-tag:
+  check-tag:
     runs-on: ubuntu-latest
     needs: ["check-commit"]
     if: ${{ needs.check-commit.outputs.result != '' }}
-    outputs:
-      tag-exists: ${{ steps.create-tag.outputs.tag_exists }}
-      release-body: ${{ steps.generate-body.outputs.body }}
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Generate body
-        id: generate-body
+      - name: Check Tag
+        id: tag
         run: |
-          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-          git_logs=$(git log "$(git describe --tags --abbrev=0)"..HEAD --oneline)
-          git_logs="${git_logs//$'\n'/$'\n'- }"
-          {
-              echo "body<<$EOF"
-              echo "- $git_logs"
-              echo "$EOF"
-          } >>"$GITHUB_OUTPUT"
-        shell: bash
-      - uses: rickstaa/action-create-tag@v1
-        id: create-tag
-        with:
-          tag: ${{ needs.check-commit.outputs.version }}
-          tag_exists_error: true
-          message: ${{ needs.check-commit.outputs.version }}
-          github_token: ${{ secrets.SECRET_GITHUB_TOKEN }}
+          ${{  github.ref_name }}"
+
   create-release:
     runs-on: ubuntu-latest
-    needs: ["check-commit", "create-tag"]
-    if: ${{ needs.create-tag.outputs.tag-exists == 'false' }}
+    needs: ["check-commit", "check-tag"]
+    if: ${{ needs.check-tag.outputs.tag-exists == 'false' }}
     steps:
       - uses: actions/checkout@v3
       - name: Create a GitHub release
@@ -62,7 +43,7 @@ jobs:
         with:
           tag: ${{ needs.check-commit.outputs.version }}
           name: ${{ needs.check-commit.outputs.version }}
-          body: ${{ needs.create-tag.outputs.release-body }}
+          body: ${{ needs.check-tag.outputs.release-body }}
   trigger-deploy:
     runs-on: ubuntu-latest
     needs: ["create-release"]
