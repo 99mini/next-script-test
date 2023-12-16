@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "update-version": "bash scripts/update_package_version.sh"
   },
   "dependencies": {
     "react": "^18",
