@@ -15,9 +15,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Check commit message
         id: check
-        run: |
-          echo "result=$(echo '${{ github.event.head_commit.message }}' | grep -o 'v[0-9.]\+$')" >> $GITHUB_OUTPUT
-
+        run: echo "result=$(echo '${{ github.event.head_commit.message }}' | grep -o 'v[0-9.]\+$')" >> $GITHUB_OUTPUT
         shell: bash
       - name: Get version
         id: get-version
