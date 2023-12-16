@@ -16,12 +16,12 @@ jobs:
       - name: Check commit message
         id: check
         run: |
-          echo '${{ github.event.head_commit.message }}' | grep -o '^Update version to v(\d|\.)+$'
+          echo '${{ github.event.head_commit.message }}' | grep -o '^Update Version to v[0-9.]\+$'
 
         shell: bash
       - name: Get version
         id: get-version
-        run: echo "version=$(echo '${{ github.event.head_commit.message }}' | grep -oP '^Update version to v(\d|\.)+$')" >> $GITHUB_OUTPUT
+        run: echo "version=$(echo '${{ github.event.head_commit.message }}' | grep -oP '^Update Version to v[0-9.]\+$')" >> $GITHUB_OUTPUT
         shell: bash
   create-tag:
     runs-on: ubuntu-latest
