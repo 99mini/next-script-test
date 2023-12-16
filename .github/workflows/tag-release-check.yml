@@ -17,11 +17,11 @@ jobs:
         id: check
         run: |
           echo ${{ github.event.head_commit.message }}
-          echo "result=$(echo '${{ github.event.head_commit.message }}' | grep -o '^Update version to v(\d|\.)+$')" >> $GITHUB_OUTPUT
+          echo "result=$(echo '${{ github.event.head_commit.message }}' | grep -oP '^Update version to v(\d|\.)+$')" >> $GITHUB_OUTPUT
           shell: bash
       - name: Get version
         id: get-version
-        run: echo "version=$(echo '${{ github.event.head_commit.message }}' | grep -o '^Update version to v(\d|\.)+$')" >> $GITHUB_OUTPUT
+        run: echo "version=$(echo '${{ github.event.head_commit.message }}' | grep -oP '^Update version to v(\d|\.)+$')" >> $GITHUB_OUTPUT
         shell: bash
   create-tag:
     runs-on: ubuntu-latest
