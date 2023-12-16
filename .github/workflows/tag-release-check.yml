@@ -30,7 +30,7 @@ jobs:
       - name: Check Tag
         id: tag
         run: |
-          ${{  github.ref_name }}"
+          echo "${{  github.ref_name }}""
 
   create-release:
     runs-on: ubuntu-latest
