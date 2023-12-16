@@ -1,3 +1,3 @@
 #!/bin/bash
 version=${1:-'patch'}
-npm version "$version" -m "Update Version to v%s"
+NEW_VERSION=$(npm --no-git-tag-version version $version) && git commit -am "Update Version to $NEW_VERSION"
