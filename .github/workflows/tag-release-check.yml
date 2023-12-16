@@ -32,9 +32,9 @@ jobs:
         id: tagName
       - uses: olegtarasov/get-tag@v2.1.2
         with:
-          tagRegex: "(?v.*)"
+          tagRegex: "(v.*)"
       - name: echo
-        run: echo ${{ steps.tagName.outputs.version }}
+        run: echo "${{ steps.tagName.outputs.version }}"
 
   create-release:
     runs-on: ubuntu-latest
