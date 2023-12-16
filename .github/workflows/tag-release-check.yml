@@ -21,33 +21,21 @@ jobs:
         id: get-version
         run: echo "version=$(echo '${{ github.event.head_commit.message }}' | grep -o 'v[0-9.]\+$')" >> $GITHUB_OUTPUT
         shell: bash
-  check-tag:
-    runs-on: ubuntu-latest
-    needs: ["check-commit"]
-    outputs:
-      version: ${{ steps.tagName.outputs.version }}
-    if: ${{ needs.check-commit.outputs.result != '' }}
-    steps:
-      - uses: actions/checkout@v3
-        id: tagName
-      - uses: olegtarasov/get-tag@v2.1.2
-        with:
-          tagRegex: "(v.*)"
-      - name: echo
-        run: echo "${{ steps.tagName.outputs.version }}"
-
   create-release:
     runs-on: ubuntu-latest
-    needs: ["check-commit", "check-tag"]
-    if: ${{ needs.check-tag.outputs.version == 'false' }}
+    needs: ["check-commit"]
+    if: ${{ needs.check-commit.outputs.result != '' }}
     steps:
-      - uses: actions/checkout@v3
-      - name: Create a GitHub release
-        uses: ncipollo/release-action@v1
+      - name: 버전 정보 추출
+        run: echo "##[set-output name=version;]$(echo '${{ github.event.head_commit.message }}' | egrep -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')"
+        id: extract_version_name
+      - name: Release 생성
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag: ${{ needs.check-commit.outputs.version }}
-          name: ${{ needs.check-commit.outputs.version }}
-          body: ${{ needs.check-tag.outputs.release-body }}
+          tag_name: ${{ steps.extract_version_name.outputs.version }}
+          release_name: ${{ steps.extract_version_name.outputs.version }}
   trigger-deploy:
     runs-on: ubuntu-latest
     needs: ["create-release"]
