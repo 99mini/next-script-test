@@ -17,7 +17,7 @@ jobs:
         id: check
         run: |
           echo '${{ github.event.head_commit.message }}' | grep -oP '^Update version to v(\d|\.)+$'
-          echo "result=$(echo '${{ github.event.head_commit.message }}' | grep -oP '^Update version to v(\d|\.)+$')" >> $GITHUB_OUTPUT
+
         shell: bash
       - name: Get version
         id: get-version
